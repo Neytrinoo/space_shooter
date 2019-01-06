@@ -6,6 +6,8 @@ pygame.init()
 size = width, height = 1700, 900
 screen = pygame.display.set_mode(size)
 player_sprite = pygame.sprite.Group()
+enemies_sprite = pygame.sprite.Group()
+bullets_sprite = pygame.sprite.Group()
 screen.fill((0, 0, 0))
 fps = 100
 PATH_TO_RECORD_FILE = 'record.json'
@@ -13,6 +15,8 @@ PATH_TO_START_SCREEN = 'img/start_screen.jpg'
 PATH_TO_BUTTON_START_GAME = 'img/button_start_game.png'
 PATH_TO_FONS = 'img/fons/'
 PATH_TO_ROCKET_SPRITES = 'img/sprites/rockets'
+PATH_TO_ENEMIES_SPRITES = 'img/sprites/enemies'
+PATH_TO_BULLETS_SPRITES = 'img/sprites/enemies/bullets'
 
 
 class ButtonStartGame:
@@ -37,9 +41,35 @@ class Background:
     def __init__(self):
         self.fon_img = pygame.image.load(PATH_TO_FONS + 'fon' + str(randint(1, 3)) + '.jpg')
         screen.blit(self.fon_img, (0, 0))
+        self.speed = 2
+        self.count_iter = 0
+        self.enemies = []
 
     def get_fon(self):
         return self.fon_img
+
+    def update(self):
+        who_is = randint(1, 3)
+        if who_is == 2 and (not self.enemies or self.count_iter % 300 == 0):
+            self.enemies.append(
+                Enemy(PATH_TO_ENEMIES_SPRITES + '/' + str(randint(1, 2)) + '.png', randint(100, 1500), 0, self.speed))
+        to_delete = []
+        for i in range(len(self.enemies)):
+            self.enemies[i].move(player)
+            if not self.enemies[i].bullet or self.count_iter % 100 == 0:
+                self.enemies[i].shoot()
+            for j in range(len(self.enemies[i].bullet)):
+                self.enemies[i].bullet[j].move()
+            enemies_sprite.draw(screen2)
+            bullets_sprite.draw(screen2)
+            if not self.enemies[i].in_screen():
+                to_delete.append(i)
+            screen.blit(screen2, (0, 0))
+        self.count_iter += 1
+        if self.count_iter > 300:
+            self.count_iter = 0
+        for i in to_delete:
+            del self.enemies[i]
 
 
 class Meteorite(pygame.sprite.Sprite):
@@ -50,14 +80,72 @@ class Meteorite(pygame.sprite.Sprite):
 
 class Enemy(pygame.sprite.Sprite):
     # В этом классе генерируются враги все их функции
-    def __init__(self):
-        super().__init__()
+    def __init__(self, sprite_path, x, y, speed):
+        super().__init__(enemies_sprite)
+        self.image = pygame.image.load(sprite_path)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.count_iter = 0
+        self.bullet = []
+        self.speed = speed
+        self.number_enemy = sprite_path.split('/')[-1][:1]
+
+    def move(self, user):
+        if self.count_iter == 1:
+            if user.rect.x > self.rect.x:
+                self.rect.x += self.speed
+            elif user.rect.x < self.rect.x:
+                self.rect.x -= self.speed
+            self.rect.y += self.speed
+        self.count_iter += 1
+        if self.count_iter > 1:
+            self.count_iter = 0
+
+    def shoot(self):
+        if self.number_enemy == '1':
+            x = self.rect.x + 35
+            y = self.rect.y + 130
+        elif self.number_enemy == '2':
+            x = self.rect.x
+            y = self.rect.y + 130
+        self.bullet.append(Bullet(PATH_TO_BULLETS_SPRITES + '/' + self.number_enemy + '.png', self.speed * 4, x, y))
+
+    def in_screen(self):
+        if self.rect.y < 900:
+            return True
+        else:
+            self.kill()
+            return False
 
 
 class Bullet(pygame.sprite.Sprite):
     # В этом классе генерируются пули врагов и отслеживается их пересечение с игроком
-    def __init__(self):
-        super().__init__()
+    def __init__(self, sprite_path, speed, x, y):
+        super().__init__(bullets_sprite)
+        self.image = pygame.image.load(sprite_path)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.speed = speed
+
+    def is_collidle(self, elem):
+        if pygame.sprite.collide_mask(self, elem):
+            print('попался')
+            return True
+
+    def move(self):
+        self.is_collidle(player)
+        self.rect.y += self.speed
+
+    def in_screen(self):
+        if self.rect.y < 900:
+            return True
+        else:
+            self.kill()
+            return False
 
 
 class Player(pygame.sprite.Sprite):
@@ -69,6 +157,7 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.path_ro_sprite = sprite_path
+        self.helth = 1000
         self.sprite_number = 1
         self.rect.x = x
         self.speed = 10
@@ -85,10 +174,20 @@ class Player(pygame.sprite.Sprite):
         screen.blit(screen2, (0, 0))
 
     def move(self, key):
-        if key == 276 and self.rect.x > 20:
-            self.rect.x -= self.speed
-        elif key == 275 and self.rect.x < 1680:
-            self.rect.x += self.speed
+        if key == 276:
+            if self.rect.x > 5:
+                self.rect.x -= self.speed
+            else:
+                self.rect.x = 1660
+        elif key == 275:
+            if self.rect.x < 1660:
+                self.rect.x += self.speed
+            else:
+                self.rect.x = 5
+        elif key == 273 and self.rect.y > 20:
+            self.rect.y -= self.speed
+        elif key == 274 and self.rect.y < 500:
+            self.rect.y += self.speed
 
 
 class Raptor(pygame.sprite.Sprite):
@@ -155,13 +254,15 @@ while running:
         if event.type == pygame.KEYDOWN:
             is_move = True
             key = event.key
+            print(key)
         if event.type == pygame.KEYUP:
-            if key == 275 or key == 276:
+            if key == 275 or key == 276 or key == 273 or key == 274:
                 is_move = False
     if is_move:
         player.move(key)
-    screen2.blit(background.get_fon(), (0, 0))
-    clock.tick(60)
-    player.update()
 
+    clock.tick(60)
+    screen2.blit(background.get_fon(), (0, 0))
+    player.update()
+    background.update()
     pygame.display.flip()

@@ -142,11 +142,6 @@ class Background:
         screen.blit(self.fon_img, (0, 0))
         self.speed = 1
         self.count_iter = 0
-        self.enemies = []
-        self.meteorites = []
-        self.sparks = []
-        self.fuels = []
-        self.upgrades = []
         self.DELAY_TABLE = [[80, 60], [60, 40], [60, 40], [60, 40]]
         self.delay = self.DELAY_TABLE[0]
 
@@ -156,34 +151,22 @@ class Background:
     def update_level(self):
         self.speed += 1
         self.delay = self.DELAY_TABLE[self.speed - 1]
-        for i in range(len(self.enemies)):
-            self.enemies[i].update_speed()
-            for j in range(len(self.enemies[i].bullet)):
-                self.enemies[i].bullet[j].update_speed()
-        for i in range(len(self.meteorites)):
-            self.meteorites[i].update_speed()
-        for i in range(len(self.fuels)):
-            self.fuels[i].update_speed()
-        for i in range(len(self.upgrades)):
-            self.upgrades[i].update_speed()
 
     def update(self):
         player.get_score(self.speed)
         who_is = randint(1, 3)
-        if who_is == 3 and (not self.enemies or self.count_iter % self.delay[1] == 0):
-            self.enemies.append(
-                Enemy(PATH_TO_ENEMIES_SPRITES + '/' + str(randint(1, COUNT_ENEMIES)) + '.png', randint(10, width - 200),
-                      -120,
-                      self.speed))
-        elif (who_is == 1 or who_is == 2) and (not self.meteorites or self.count_iter % self.delay[1] == 0):
-            self.meteorites.append(
-                Meteorite(PATH_TO_METEORITES_SPRITES + '/' + str(randint(1, COUNT_METEORITES)) + '.png',
-                          randint(10, width - 70), -30, self.speed))
+        if who_is == 3 and self.count_iter % self.delay[1] == 0:
+            Enemy(PATH_TO_ENEMIES_SPRITES + '/' + str(randint(1, COUNT_ENEMIES)) + '.png', randint(10, width - 200),
+                  -120,
+                  self.speed)
+        elif (who_is == 1 or who_is == 2) and self.count_iter % self.delay[1] == 0:
+            Meteorite(PATH_TO_METEORITES_SPRITES + '/' + str(randint(1, COUNT_METEORITES)) + '.png',
+                      randint(10, width - 70), -30, self.speed)
         drop = randint(1, 14)
         if drop == 5 and self.count_iter % 50 == 0:
-            self.fuels.append(Fuel(PATH_TO_FUEL_SPRITE, randint(10, width - 50), 0, self.speed))
+            Fuel(PATH_TO_FUEL_SPRITE, randint(10, width - 50), 0, self.speed)
         if player.is_xp_drop():
-            self.upgrades.append(Upgrade(PATH_TO_UPGRADE_SPRITE, randint(10, width - 60), -10, self.speed))
+            Upgrade(PATH_TO_UPGRADE_SPRITE, randint(10, width - 60), -10, self.speed)
         self.update_enemies()
         self.update_meteorites()
         self.update_sparks()
@@ -194,110 +177,29 @@ class Background:
             self.count_iter = 0
 
     def update_enemies(self):
-        to_delete = []
-        for i in range(len(self.enemies)):
-            if player.rocket_level > 2:
-                self.enemies[i].move(player, True)
-            else:
-                self.enemies[i].move(player, False)
-
-            for j in range(len(self.enemies[i].bullet)):
-                self.enemies[i].bullet[j].move()
-                if self.enemies[i].bullet[j].is_collidle(player) and not self.sparks:
-                    sparks_count = 50
-                    nums = range(-6, 10)
-                    for _ in range(sparks_count):
-                        self.sparks.append(
-                            Sparks(self.enemies[i].bullet[j].rect.x, self.enemies[i].bullet[j].rect.y, choice(nums),
-                                   choice(nums),
-                                   self.speed))
-                    player.take_health(200)
-            is_del = False
-            if self.enemies[i].is_collidle(player):
-                is_del = True
-                to_delete.append(i)
-                sparks_count = 80
-                nums = range(-6, 10)
-                is_del = True
-                for _ in range(sparks_count):
-                    self.sparks.append(
-                        Sparks(self.enemies[i].rect.x, self.enemies[i].rect.y, choice(nums), choice(nums),
-                               self.speed))
-                player.take_health(200)
-            if not self.enemies[i].in_screen() and not is_del:
-                to_delete.append(i)
-
+        enemies_sprite.update(False)
+        bullets_sprite.update(False)
         enemies_sprite.draw(screen2)
         bullets_sprite.draw(screen2)
         screen.blit(screen2, (0, 0))
-        for i in to_delete:
-            del self.enemies[i]
 
     def update_meteorites(self):
-        to_delete = []
-        for i in range(len(self.meteorites)):
-            self.meteorites[i].move()
-            is_del = False
-            if self.meteorites[i].is_collidle(player) and not self.sparks:
-                to_delete.append(i)
-                sparks_count = 30
-                nums = range(-6, 10)
-                is_del = True
-                for _ in range(sparks_count):
-                    self.sparks.append(
-                        Sparks(self.meteorites[i].rect.x, self.meteorites[i].rect.y, choice(nums), choice(nums),
-                               self.speed))
-                player.take_health(300)
-            if not self.meteorites[i].in_screen() and not to_delete:
-                to_delete.append(i)
-        for i in to_delete:
-            del self.meteorites[i]
+        meteorits_sprite.update(False)
         meteorits_sprite.draw(screen2)
         screen.blit(screen2, (0, 0))
 
     def update_sparks(self):
-        to_delete = []
-        for i in range(len(self.sparks)):
-            self.sparks[i].move()
-            if not self.sparks[i].in_screen():
-                to_delete.append(i)
-
+        sparks_sprite.update()
         sparks_sprite.draw(screen2)
         screen.blit(screen2, (0, 0))
-        for i in to_delete:
-            if i < len(self.sparks):
-                self.sparks[i].kill()
-                del self.sparks[i]
 
     def update_fuels(self):
-        to_delete = []
-        for i in range(len(self.fuels)):
-            self.fuels[i].move()
-            is_del = False
-            if self.fuels[i].is_collidle(player):
-                to_delete.append(i)
-                is_del = True
-                player.get_health(200)
-            if not self.fuels[i].in_screen() and not is_del:
-                to_delete.append(i)
-        for i in to_delete:
-            del self.fuels[i]
+        fuels_sprite.update(False)
         fuels_sprite.draw(screen2)
         screen.blit(screen2, (0, 0))
 
     def update_upgrades(self):
-        to_delete = []
-        for i in range(len(self.upgrades)):
-            self.upgrades[i].move()
-            is_del = False
-            if self.upgrades[i].is_collidle(player):
-                to_delete.append(i)
-                is_del = True
-                player.update_xp(100)
-            if not self.upgrades[i].in_screen() and not is_del:
-                to_delete.append(i)
-        for i in to_delete:
-            del self.upgrades[i]
+        upgrades_sprite.update(False)
         upgrades_sprite.draw(screen2)
         screen.blit(screen2, (0, 0))
 
@@ -316,10 +218,11 @@ class Sparks(pygame.sprite.Sprite):
         self.velocity = [dx, dy]
         self.speed = speed
 
-    def move(self):
+    def update(self):
         self.velocity[1] += self.speed
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
+        self.in_screen()
 
     def in_screen(self):
         if self.rect.y < 900:
@@ -340,8 +243,16 @@ class Meteorite(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-    def move(self):
+    def update(self, is_update_speed):
         self.rect.y += self.speed
+        self.in_screen()
+        if self.is_collidle(player):
+            for i in range(50):
+                nums = range(-6, 10)
+                Sparks(self.rect.x, self.rect.y, choice(nums), choice(nums), self.speed)
+            player.take_health(300)
+        if is_update_speed:
+            self.update_speed()
 
     def is_collidle(self, elem):
         if pygame.sprite.collide_mask(self, elem):
@@ -375,19 +286,25 @@ class Enemy(pygame.sprite.Sprite):
         self.number_enemy = sprite_path.split('/')[-1][:1]
         self.iter_for_bullets = 0
 
-    def move(self, user, is_gui):
+    def update(self, is_update_speed):
+        if is_update_speed:
+            self.update_speed()
+        if player.rocket_level > 2:
+            is_gui = True
+        else:
+            is_gui = False
         if self.count_iter == 1:
             if is_gui:
-                if user.rect.x > self.rect.x:
+                if player.rect.x > self.rect.x:
                     self.rect.x += self.speed
-                elif user.rect.x < self.rect.x:
+                elif player.rect.x < self.rect.x:
                     self.rect.x -= self.speed
             self.rect.y += self.speed
         self.count_iter += 1
         if self.count_iter > 1:
             self.count_iter = 0
 
-        if not self.bullet or self.iter_for_bullets % (170 - self.speed * 20) == 0:
+        if self.iter_for_bullets % (170 - self.speed * 20) == 0:
             self.shoot()
 
         self.iter_for_bullets += 1
@@ -401,7 +318,7 @@ class Enemy(pygame.sprite.Sprite):
         elif self.number_enemy == '2':
             x = self.rect.x
         y = self.rect.y + 130
-        self.bullet.append(Bullet(PATH_TO_BULLETS_SPRITES + '/' + self.number_enemy + '.png', self.speed * 4, x, y))
+        Bullet(PATH_TO_BULLETS_SPRITES + '/' + self.number_enemy + '.png', self.speed * 4, x, y)
 
     def in_screen(self):
         if self.rect.colliderect(screen_rect):
@@ -435,8 +352,16 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
             return True
 
-    def move(self):
-        self.is_collidle(player)
+    def update(self, is_update_speed):
+        self.in_screen()
+        if is_update_speed:
+            self.update_speed()
+        if self.is_collidle(player):
+            for i in range(50):
+                nums = range(-6, 10)
+                Sparks(self.rect.x, self.rect.y, choice(nums), choice(nums), self.speed)
+            player.take_health(200)
+
         self.rect.y += self.speed
 
     def in_screen(self):
@@ -573,6 +498,11 @@ class Player(pygame.sprite.Sprite):
     def update_speed(self):
         self.speed = self.SPEED_TABLE[self.rocket_level - 1]
         background.update_level()
+        enemies_sprite.update(True)
+        meteorits_sprite.update(True)
+        fuels_sprite.update(True)
+        upgrades_sprite.update(True)
+        bullets_sprite.update(True)
 
     def is_xp_drop(self):
         if self.xp_drop > 500 and self.rocket_level < 4:
@@ -618,8 +548,13 @@ class Fuel(pygame.sprite.Sprite):
         self.kill()
         return False
 
-    def move(self):
+    def update(self, is_update_speed):
+        if is_update_speed:
+            self.update_speed()
         self.rect.y += self.speed
+        self.in_screen()
+        if self.is_collidle(player):
+            player.get_health(300)
 
     def update_speed(self):
         self.speed += 1
@@ -649,8 +584,13 @@ class Upgrade(pygame.sprite.Sprite):
         self.kill()
         return False
 
-    def move(self):
+    def update(self, is_update_speed):
+        if is_update_speed:
+            self.update_speed()
         self.rect.y += self.speed
+        self.in_screen()
+        if self.is_collidle(player):
+            player.update_xp(100)
 
     def update_speed(self):
         self.speed += 1
@@ -702,6 +642,7 @@ while running:
 
     clock.tick(60)
     screen2.blit(background.get_fon(), (0, 0))
-    player.update()
     background.update()
+    player.update()
+
     pygame.display.flip()

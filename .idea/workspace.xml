@@ -5,10 +5,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/record.json" beforeDir="false" afterPath="$PROJECT_DIR$/record.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/готовые анимации в фотошопе/BFR анимация.psd" beforeDir="false" afterPath="$PROJECT_DIR$/готовые анимации в фотошопе/BFR анимация.psd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/готовые анимации в фотошопе/Falcon 9.psd" beforeDir="false" afterPath="$PROJECT_DIR$/готовые анимации в фотошопе/Falcon 9.psd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/готовые анимации в фотошопе/Falcon Heavy.psd" beforeDir="false" afterPath="$PROJECT_DIR$/готовые анимации в фотошопе/Falcon Heavy.psd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/готовые анимации в фотошопе/дропы.psd" beforeDir="false" afterPath="$PROJECT_DIR$/готовые анимации в фотошопе/дропы.psd" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,31 +16,31 @@
     <session id="-624325266">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="12" />
+          <entry key="project.closed" value="15" />
           <entry key="project.open.time.0" value="2" />
-          <entry key="project.open.time.2" value="5" />
-          <entry key="project.open.time.3" value="5" />
-          <entry key="project.opened" value="12" />
+          <entry key="project.open.time.2" value="7" />
+          <entry key="project.open.time.3" value="6" />
+          <entry key="project.opened" value="15" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="8" />
+          <entry key="py" value="9" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="8" />
+          <entry key="Python" value="9" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="15222" />
+          <entry key="py" value="15833" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="15222" />
+          <entry key="Python" value="15833" />
         </counts>
       </usages-collector>
     </session>
@@ -54,16 +50,16 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="364">
-              <caret line="683" column="17" lean-forward="true" selection-start-line="683" selection-start-column="17" selection-end-line="683" selection-end-column="17" />
+            <state relative-caret-position="432">
+              <caret line="628" column="7" lean-forward="true" selection-start-line="628" selection-start-column="7" selection-end-line="628" selection-end-column="7" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
-                <marker date="1547039128052" expanded="true" signature="1660:2999" ph="..." />
-                <marker date="1547039128052" expanded="true" signature="3011:3016" ph="..." />
-                <marker date="1547039128052" expanded="true" signature="3011:3352" ph="..." />
-                <marker date="1547039128052" expanded="true" signature="3365:4760" ph="..." />
-                <marker date="1547039128052" expanded="true" signature="5308:5854" ph="..." />
-                <marker date="1547039128052" expanded="true" signature="14095:14101" ph="..." />
+                <marker date="1547208831898" expanded="true" signature="1660:2999" ph="..." />
+                <marker date="1547208831898" expanded="true" signature="3011:3016" ph="..." />
+                <marker date="1547208831898" expanded="true" signature="3011:3352" ph="..." />
+                <marker date="1547208831898" expanded="true" signature="3365:4760" ph="..." />
+                <marker date="1547208831898" expanded="true" signature="5177:5261" ph="..." />
+                <marker date="1547208831898" expanded="true" signature="10521:10527" ph="..." />
               </folding>
             </state>
           </provider>
@@ -276,18 +272,25 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/pygame/sprite.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="233">
+          <caret line="451" column="8" selection-start-line="451" selection-start-column="8" selection-end-line="451" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="683" column="17" lean-forward="true" selection-start-line="683" selection-start-column="17" selection-end-line="683" selection-end-column="17" />
+        <state relative-caret-position="432">
+          <caret line="628" column="7" lean-forward="true" selection-start-line="628" selection-start-column="7" selection-end-line="628" selection-end-column="7" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
-            <marker date="1547039128052" expanded="true" signature="1660:2999" ph="..." />
-            <marker date="1547039128052" expanded="true" signature="3011:3016" ph="..." />
-            <marker date="1547039128052" expanded="true" signature="3011:3352" ph="..." />
-            <marker date="1547039128052" expanded="true" signature="3365:4760" ph="..." />
-            <marker date="1547039128052" expanded="true" signature="5308:5854" ph="..." />
-            <marker date="1547039128052" expanded="true" signature="14095:14101" ph="..." />
+            <marker date="1547208831898" expanded="true" signature="1660:2999" ph="..." />
+            <marker date="1547208831898" expanded="true" signature="3011:3016" ph="..." />
+            <marker date="1547208831898" expanded="true" signature="3011:3352" ph="..." />
+            <marker date="1547208831898" expanded="true" signature="3365:4760" ph="..." />
+            <marker date="1547208831898" expanded="true" signature="5177:5261" ph="..." />
+            <marker date="1547208831898" expanded="true" signature="10521:10527" ph="..." />
           </folding>
         </state>
       </provider>

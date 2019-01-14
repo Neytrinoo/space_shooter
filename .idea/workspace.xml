@@ -16,31 +16,33 @@
     <session id="-624325266">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="15" />
-          <entry key="project.open.time.0" value="2" />
-          <entry key="project.open.time.2" value="7" />
+          <entry key="project.closed" value="16" />
+          <entry key="project.open.time.0" value="3" />
+          <entry key="project.open.time.2" value="8" />
           <entry key="project.open.time.3" value="6" />
-          <entry key="project.opened" value="15" />
+          <entry key="project.opened" value="17" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="9" />
+          <entry key="png" value="5" />
+          <entry key="py" value="10" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="9" />
+          <entry key="Image" value="5" />
+          <entry key="Python" value="10" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="15833" />
+          <entry key="py" value="16775" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="15833" />
+          <entry key="Python" value="16775" />
         </counts>
       </usages-collector>
     </session>
@@ -50,16 +52,17 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="628" column="7" lean-forward="true" selection-start-line="628" selection-start-column="7" selection-end-line="628" selection-end-column="7" />
+            <state relative-caret-position="421">
+              <caret line="587" column="27" lean-forward="true" selection-start-line="587" selection-start-column="27" selection-end-line="587" selection-end-column="27" />
               <folding>
-                <element signature="e#0#13#0" expanded="true" />
-                <marker date="1547208831898" expanded="true" signature="1660:2999" ph="..." />
-                <marker date="1547208831898" expanded="true" signature="3011:3016" ph="..." />
-                <marker date="1547208831898" expanded="true" signature="3011:3352" ph="..." />
-                <marker date="1547208831898" expanded="true" signature="3365:4760" ph="..." />
-                <marker date="1547208831898" expanded="true" signature="5177:5261" ph="..." />
-                <marker date="1547208831898" expanded="true" signature="10521:10527" ph="..." />
+                <element signature="e#0#11#0" expanded="true" />
+                <marker date="1547475420405" expanded="true" signature="2449:3788" ph="..." />
+                <marker date="1547475420405" expanded="true" signature="3800:3805" ph="..." />
+                <marker date="1547475420405" expanded="true" signature="3800:4141" ph="..." />
+                <marker date="1547475420405" expanded="true" signature="4154:5549" ph="..." />
+                <marker date="1547475420405" expanded="true" signature="5966:6050" ph="..." />
+                <marker date="1547475420405" expanded="true" signature="7737:8405" ph="..." />
+                <marker date="1547475420405" expanded="true" signature="11519:11525" ph="..." />
               </folding>
             </state>
           </provider>
@@ -113,6 +116,28 @@
               <item name="проект Pygame" type="462c0819:PsiDirectoryNode" />
               <item name="img" type="462c0819:PsiDirectoryNode" />
               <item name="sprites" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="проект Pygame" type="b2602c69:ProjectViewProjectNode" />
+              <item name="проект Pygame" type="462c0819:PsiDirectoryNode" />
+              <item name="img" type="462c0819:PsiDirectoryNode" />
+              <item name="sprites" type="462c0819:PsiDirectoryNode" />
+              <item name="enemies" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="проект Pygame" type="b2602c69:ProjectViewProjectNode" />
+              <item name="проект Pygame" type="462c0819:PsiDirectoryNode" />
+              <item name="img" type="462c0819:PsiDirectoryNode" />
+              <item name="sprites" type="462c0819:PsiDirectoryNode" />
+              <item name="enemies" type="462c0819:PsiDirectoryNode" />
+              <item name="bullets" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="проект Pygame" type="b2602c69:ProjectViewProjectNode" />
+              <item name="проект Pygame" type="462c0819:PsiDirectoryNode" />
+              <item name="img" type="462c0819:PsiDirectoryNode" />
+              <item name="sprites" type="462c0819:PsiDirectoryNode" />
+              <item name="meteorites" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="проект Pygame" type="b2602c69:ProjectViewProjectNode" />
@@ -212,13 +237,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.10063224" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.21475054" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.21475054" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3991323" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -272,25 +298,38 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/img/sprites/enemies/bullets/2.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/img/sprites/enemies/bullets/1.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
     <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/pygame/sprite.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="233">
-          <caret line="451" column="8" selection-start-line="451" selection-start-column="8" selection-end-line="451" selection-end-column="8" />
+        <state relative-caret-position="403">
+          <caret line="461" column="17" lean-forward="true" selection-start-line="461" selection-start-column="17" selection-end-line="461" selection-end-column="17" />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/img/sprites/meteorites/3.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/img/sprites/meteorites/2.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="628" column="7" lean-forward="true" selection-start-line="628" selection-start-column="7" selection-end-line="628" selection-end-column="7" />
+        <state relative-caret-position="421">
+          <caret line="587" column="27" lean-forward="true" selection-start-line="587" selection-start-column="27" selection-end-line="587" selection-end-column="27" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
-            <marker date="1547208831898" expanded="true" signature="1660:2999" ph="..." />
-            <marker date="1547208831898" expanded="true" signature="3011:3016" ph="..." />
-            <marker date="1547208831898" expanded="true" signature="3011:3352" ph="..." />
-            <marker date="1547208831898" expanded="true" signature="3365:4760" ph="..." />
-            <marker date="1547208831898" expanded="true" signature="5177:5261" ph="..." />
-            <marker date="1547208831898" expanded="true" signature="10521:10527" ph="..." />
+            <element signature="e#0#11#0" expanded="true" />
+            <marker date="1547475420405" expanded="true" signature="2449:3788" ph="..." />
+            <marker date="1547475420405" expanded="true" signature="3800:3805" ph="..." />
+            <marker date="1547475420405" expanded="true" signature="3800:4141" ph="..." />
+            <marker date="1547475420405" expanded="true" signature="4154:5549" ph="..." />
+            <marker date="1547475420405" expanded="true" signature="5966:6050" ph="..." />
+            <marker date="1547475420405" expanded="true" signature="7737:8405" ph="..." />
+            <marker date="1547475420405" expanded="true" signature="11519:11525" ph="..." />
           </folding>
         </state>
       </provider>

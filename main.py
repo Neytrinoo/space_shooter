@@ -1,8 +1,8 @@
-import pygame
 import json
-from random import randint, choice
 import os
-import sys
+from random import randint, choice
+
+import pygame
 
 pygame.init()
 size = width, height = 1700, 900
@@ -33,6 +33,26 @@ COUNT_ROCKETS = 1
 COUNT_ENEMIES = 2
 COUNT_BULLETS = 2
 COUNT_METEORITES = 3
+
+
+def load_image(name, colorkey=None):
+    try:
+        image = pygame.image.load(name)
+        return image
+    except pygame.error as message:
+        print('Cannot load image:', name)
+        raise SystemExit(message)
+
+
+BULLET_SPRITE_1 = load_image(PATH_TO_BULLETS_SPRITES + '/1.png')
+BULLET_SPRITE_2 = load_image(PATH_TO_BULLETS_SPRITES + '/2.png')
+ENEMIES_SPRITE_1 = load_image(PATH_TO_ENEMIES_SPRITES + '/1.png')
+ENEMIES_SPRITE_2 = load_image(PATH_TO_ENEMIES_SPRITES + '/2.png')
+METEORITES_SPRITE_1 = load_image(PATH_TO_METEORITES_SPRITES + '/1.png')
+METEORITES_SPRITE_2 = load_image(PATH_TO_METEORITES_SPRITES + '/2.png')
+METEORITES_SPRITE_3 = load_image(PATH_TO_METEORITES_SPRITES + '/3.png')
+FUEL_SPRITE = load_image(PATH_TO_FUEL_SPRITE)
+UPGRADE_SPRITE = load_image(PATH_TO_UPGRADE_SPRITE)
 
 
 class ButtonStartGame:
@@ -156,17 +176,14 @@ class Background:
         player.get_score(self.speed)
         who_is = randint(1, 3)
         if who_is == 3 and self.count_iter % self.delay[1] == 0:
-            Enemy(PATH_TO_ENEMIES_SPRITES + '/' + str(randint(1, COUNT_ENEMIES)) + '.png', randint(10, width - 200),
-                  -120,
-                  self.speed)
+            Enemy(randint(1, 2), randint(10, width - 200), -120, self.speed)
         elif (who_is == 1 or who_is == 2) and self.count_iter % self.delay[1] == 0:
-            Meteorite(PATH_TO_METEORITES_SPRITES + '/' + str(randint(1, COUNT_METEORITES)) + '.png',
-                      randint(10, width - 70), -30, self.speed)
+            Meteorite(randint(1, 3), randint(10, width - 70), -20, self.speed)
         drop = randint(1, 14)
         if drop == 5 and self.count_iter % 50 == 0:
-            Fuel(PATH_TO_FUEL_SPRITE, randint(10, width - 50), 0, self.speed)
+            Fuel(randint(10, width - 50), 0, self.speed)
         if player.is_xp_drop():
-            Upgrade(PATH_TO_UPGRADE_SPRITE, randint(10, width - 60), -10, self.speed)
+            Upgrade(randint(10, width - 60), -10, self.speed)
         self.update_enemies()
         self.update_meteorites()
         self.update_sparks()
@@ -204,6 +221,33 @@ class Background:
         screen.blit(screen2, (0, 0))
 
 
+class Drops(pygame.sprite.Sprite):
+    def __init__(self, sprite_group, image, x, y, speed):
+        super().__init__(sprite_group)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.speed = speed
+        self.mask = pygame.mask.from_surface(self.image)
+
+    def is_collidle(self, elem):
+        if pygame.sprite.collide_mask(self, elem):
+            self.kill()
+            return True
+        return False
+
+    def in_screen(self):
+        if self.rect.colliderect(screen_rect):
+            return True
+        else:
+            self.kill()
+            return False
+
+    def update_speed(self):
+        self.speed += 1
+
+
 class Sparks(pygame.sprite.Sprite):
     def __init__(self, x, y, dx, dy, speed):
         super().__init__(sparks_sprite)
@@ -232,16 +276,17 @@ class Sparks(pygame.sprite.Sprite):
             return False
 
 
-class Meteorite(pygame.sprite.Sprite):
+class Meteorite(Drops):
     # В этом классе генерируются метеориты и есть функция контроля пересечения метеорита и игрока
-    def __init__(self, sprite_path, x, y, speed):
-        super().__init__(meteorits_sprite)
-        self.image = pygame.image.load(sprite_path)
-        self.mask = pygame.mask.from_surface(self.image)
-        self.speed = speed
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+    def __init__(self, sprite_random, x, y, speed):
+        self.sprite_random = sprite_random
+        if self.sprite_random == 1:
+            image = METEORITES_SPRITE_1
+        elif self.sprite_random == 2:
+            image = METEORITES_SPRITE_2
+        else:
+            image = METEORITES_SPRITE_3
+        super().__init__(meteorits_sprite, image, x, y, speed)
 
     def update(self, is_update_speed):
         self.rect.y += self.speed
@@ -254,36 +299,19 @@ class Meteorite(pygame.sprite.Sprite):
         if is_update_speed:
             self.update_speed()
 
-    def is_collidle(self, elem):
-        if pygame.sprite.collide_mask(self, elem):
-            self.kill()
-            return True
-        return False
 
-    def in_screen(self):
-        if self.rect.colliderect(screen_rect):
-            return True
-        else:
-            self.kill()
-            return False
-
-    def update_speed(self):
-        self.speed += 1
-
-
-class Enemy(pygame.sprite.Sprite):
+class Enemy(Drops):
     # В этом классе генерируются враги все их функции
-    def __init__(self, sprite_path, x, y, speed):
-        super().__init__(enemies_sprite)
-        self.image = pygame.image.load(sprite_path)
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+    def __init__(self, sprite_random, x, y, speed):
+        self.sprite_random = sprite_random
+        if self.sprite_random == 1:
+            image = ENEMIES_SPRITE_1
+        else:
+            image = ENEMIES_SPRITE_2
+        super().__init__(enemies_sprite, image, x, y, speed)
+
         self.count_iter = 0
         self.bullet = []
-        self.speed = speed
-        self.number_enemy = sprite_path.split('/')[-1][:1]
         self.iter_for_bullets = 0
 
     def update(self, is_update_speed):
@@ -306,51 +334,30 @@ class Enemy(pygame.sprite.Sprite):
 
         if self.iter_for_bullets % (170 - self.speed * 20) == 0:
             self.shoot()
-
+        if self.is_collidle(player):
+            for i in range(50):
+                nums = range(-6, 10)
+                Sparks(self.rect.x, self.rect.y, choice(nums), choice(nums), self.speed)
+            player.take_health(200)
         self.iter_for_bullets += 1
 
-    def update_speed(self):
-        self.speed += 1
-
     def shoot(self):
-        if self.number_enemy == '1':
-            x = self.rect.x + 35
-        elif self.number_enemy == '2':
-            x = self.rect.x
         y = self.rect.y + 130
-        Bullet(PATH_TO_BULLETS_SPRITES + '/' + self.number_enemy + '.png', self.speed * 4, x, y)
-
-    def in_screen(self):
-        if self.rect.colliderect(screen_rect):
-            return True
-        else:
-            self.kill()
-            return False
-
-    def is_collidle(self, elem):
-        if pygame.sprite.collide_mask(self, elem):
-            self.kill()
-            for i in range(len(self.bullet)):
-                self.bullet[i].kill()
-            return True
-        return False
+        if self.sprite_random == 1:
+            x = self.rect.x + 35
+        elif self.sprite_random == 2:
+            x = self.rect.x
+        Bullet(self.sprite_random, self.speed * 4, x, y)
 
 
-class Bullet(pygame.sprite.Sprite):
+class Bullet(Drops):
     # В этом классе генерируются пули врагов и отслеживается их пересечение с игроком
     def __init__(self, sprite_path, speed, x, y):
-        super().__init__(bullets_sprite)
-        self.image = pygame.image.load(sprite_path)
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.speed = speed
-
-    def is_collidle(self, elem):
-        if pygame.sprite.collide_mask(self, elem):
-            self.kill()
-            return True
+        if sprite_path == 1:
+            image = BULLET_SPRITE_1
+        elif sprite_path == 2:
+            image = BULLET_SPRITE_2
+        super().__init__(bullets_sprite, image, x, y, speed)
 
     def update(self, is_update_speed):
         self.in_screen()
@@ -363,16 +370,6 @@ class Bullet(pygame.sprite.Sprite):
             player.take_health(200)
 
         self.rect.y += self.speed
-
-    def in_screen(self):
-        if self.rect.colliderect(screen_rect):
-            return True
-        else:
-            self.kill()
-            return False
-
-    def update_speed(self):
-        self.speed += 1
 
 
 class Player(pygame.sprite.Sprite):
@@ -420,19 +417,19 @@ class Player(pygame.sprite.Sprite):
         screen.blit(screen2, (0, 0))
 
     def move(self, key):
-        if key == 276:
+        if key[276] == 1:
             if self.rect.x > 5:
                 self.rect.x -= self.speed
             else:
                 self.rect.x = 1680
-        elif key == 275:
+        if key[275] == 1:
             if self.rect.x < 1680:
                 self.rect.x += self.speed
             else:
                 self.rect.x = 5
-        elif key == 273 and self.rect.y > 20:
+        if key[273] == 1 and self.rect.y > 20:
             self.rect.y -= self.speed
-        elif key == 274 and self.rect.y < height - self.HEIGHT_TABLE[self.rocket_level - 1]:
+        if key[274] == 1 and self.rect.y < height - self.HEIGHT_TABLE[self.rocket_level - 1]:
             self.rect.y += self.speed
 
     def take_health(self, count):
@@ -525,28 +522,11 @@ class Fairing(pygame.sprite.Sprite):
         super().__init__()
 
 
-class Fuel(pygame.sprite.Sprite):
+class Fuel(Drops):
     # В этом классе создается дроп - топливо, которое повышает здоровье игрока на 20%.
-    def __init__(self, sprite_path, x, y, speed):
-        super().__init__(fuels_sprite)
-        self.image = pygame.image.load(sprite_path)
-        self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = x, y
-        self.mask = pygame.mask.from_surface(self.image)
-        self.speed = speed
-
-    def is_collidle(self, elem):
-        if pygame.sprite.collide_mask(self, elem):
-            self.kill()
-            return True
-        else:
-            return False
-
-    def in_screen(self):
-        if self.rect.colliderect(screen_rect):
-            return True
-        self.kill()
-        return False
+    def __init__(self, x, y, speed):
+        image = FUEL_SPRITE
+        super().__init__(fuels_sprite, image, x, y, speed)
 
     def update(self, is_update_speed):
         if is_update_speed:
@@ -556,33 +536,13 @@ class Fuel(pygame.sprite.Sprite):
         if self.is_collidle(player):
             player.get_health(300)
 
-    def update_speed(self):
-        self.speed += 1
 
-
-class Upgrade(pygame.sprite.Sprite):
+class Upgrade(Drops):
     # В этом классе создается дроп - запчасии. Они увеличивают опыт игрока и с помощью них игрок сменяет ракеты,
     # когда накопит нужное количество опыта.
-    def __init__(self, sprite_path, x, y, speed):
-        super().__init__(upgrades_sprite)
-        self.image = pygame.image.load(sprite_path)
-        self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = x, y
-        self.mask = pygame.mask.from_surface(self.image)
-        self.speed = speed
-
-    def is_collidle(self, elem):
-        if pygame.sprite.collide_mask(self, elem):
-            self.kill()
-            return True
-        else:
-            return False
-
-    def in_screen(self):
-        if self.rect.colliderect(screen_rect):
-            return True
-        self.kill()
-        return False
+    def __init__(self, x, y, speed):
+        image = UPGRADE_SPRITE
+        super().__init__(upgrades_sprite, image, x, y, speed)
 
     def update(self, is_update_speed):
         if is_update_speed:
@@ -591,9 +551,6 @@ class Upgrade(pygame.sprite.Sprite):
         self.in_screen()
         if self.is_collidle(player):
             player.update_xp(100)
-
-    def update_speed(self):
-        self.speed += 1
 
 
 def start_screen():
@@ -625,20 +582,11 @@ screen2 = pygame.Surface(screen.get_size())
 player = Player(PATH_TO_ROCKET_SPRITES + '/1/1.png', 500, 700)
 clock = pygame.time.Clock()
 
-is_move = False
-key = 0
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN:
-            is_move = True
-            key = event.key
-        if event.type == pygame.KEYUP:
-            if key == 275 or key == 276 or key == 273 or key == 274:
-                is_move = False
-    if is_move:
-        player.move(key)
+    player.move(pygame.key.get_pressed())
 
     clock.tick(60)
     screen2.blit(background.get_fon(), (0, 0))

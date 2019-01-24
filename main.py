@@ -3,6 +3,7 @@ import os
 from random import randint, choice
 
 import pygame
+from pygame.sprite import Group
 
 pygame.init()
 size = width, height = 1700, 900
@@ -15,6 +16,10 @@ sparks_sprite = pygame.sprite.Group()
 meteorits_sprite = pygame.sprite.Group()
 fuels_sprite = pygame.sprite.Group()
 upgrades_sprite = pygame.sprite.Group()
+raptor_group = pygame.sprite.Group()
+fairing_group = pygame.sprite.Group()
+raptor_icon_group = pygame.sprite.Group()
+fairing_icon_group = pygame.sprite.Group()
 screen.fill((0, 0, 0))
 fps = 100
 PATH_TO_RECORD_FILE = 'record.json'
@@ -28,6 +33,10 @@ PATH_TO_METEORITES_SPRITES = 'img/sprites/meteorites'
 PATH_TO_SPARKS_SPRITE = 'img/sprites/particles/sparks'
 PATH_TO_FUEL_SPRITE = 'img/sprites/drops/fuel.png'
 PATH_TO_UPGRADE_SPRITE = 'img/sprites/drops/upgrades.png'
+PATH_TO_FAIRING_SPRITE = 'img/sprites/drops/titan_fairing.png'
+PATH_TO_FAIRING_ICON_SPRITE = 'img/sprites/drops/titan_fairing_icon.png'
+PATH_TO_RAPTOR_SPRITE = 'img/sprites/drops/raptor.png'
+PATH_TO_RAPTOR_ICON_SPRITE = 'img/sprites/drops/raptor_icon.png'
 COUNT_SPARCKS = 5
 COUNT_ROCKETS = 1
 COUNT_ENEMIES = 2
@@ -53,6 +62,10 @@ METEORITES_SPRITE_2 = load_image(PATH_TO_METEORITES_SPRITES + '/2.png')
 METEORITES_SPRITE_3 = load_image(PATH_TO_METEORITES_SPRITES + '/3.png')
 FUEL_SPRITE = load_image(PATH_TO_FUEL_SPRITE)
 UPGRADE_SPRITE = load_image(PATH_TO_UPGRADE_SPRITE)
+RAPTOR_SPRITE = load_image(PATH_TO_RAPTOR_SPRITE)
+RAPTOR_ICON_SPRITE = load_image(PATH_TO_RAPTOR_ICON_SPRITE)
+FAIRING_SPRITE = load_image(PATH_TO_FAIRING_SPRITE)
+FAIRING_ICON_SPRITE = load_image(PATH_TO_FAIRING_ICON_SPRITE)
 
 
 class ButtonStartGame:
@@ -156,6 +169,52 @@ class Health:
         self.health = self.all_health
 
 
+class RaptorIcon(pygame.sprite.Sprite):
+    def __init__(self, image, time):
+        super().__init__(raptor_icon_group)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = 400
+        self.rect.y = 5
+        self.time = time
+        font = pygame.font.Font(None, 20).render(str(self.time), 1, pygame.Color('white'))
+        screen2.blit(font, (420, 8))
+
+    def update(self, is_low_time):
+        font = pygame.font.Font(None, 20).render(str(self.time), 1, pygame.Color('white'))
+        screen2.blit(font, (420, 8))
+        if is_low_time:
+            self.low_time()
+        if self.time <= 0:
+            self.kill()
+
+    def low_time(self):
+        self.time -= 1
+
+
+class FairingIcon(pygame.sprite.Sprite):
+    def __init__(self, image, count):
+        super().__init__(fairing_icon_group)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = 450
+        self.rect.y = 5
+        self.count = count
+        font = pygame.font.Font(None, 20).render(str(self.count), 1, pygame.Color('white'))
+        screen2.blit(font, (470, 8))
+
+    def update(self, is_low_count):
+        font = pygame.font.Font(None, 20).render(str(self.count), 1, pygame.Color('white'))
+        screen2.blit(font, (470, 8))
+        if is_low_count:
+            self.low_count()
+        if self.count <= 0:
+            self.kill()
+
+    def low_count(self):
+        self.count -= 1
+
+
 class Background:
     def __init__(self):
         self.fon_img = pygame.image.load(PATH_TO_FONS + 'fon' + str(randint(1, 3)) + '.jpg')
@@ -184,14 +243,30 @@ class Background:
             Fuel(randint(10, width - 50), 0, self.speed)
         if player.is_xp_drop():
             Upgrade(randint(10, width - 60), -10, self.speed)
+        if drop == 8 and self.count_iter % 80 == 0:
+            Raptor(randint(10, width - 50), -10, self.speed)
+        if drop == 14 and self.count_iter % 80 == 0:
+            Fairing(randint(10, width - 50), -10, self.speed)
         self.update_enemies()
         self.update_meteorites()
         self.update_sparks()
         self.update_fuels()
         self.update_upgrades()
+        self.update_raptor()
+        self.update_fairing()
         self.count_iter += 1
         if self.count_iter > 1000:
             self.count_iter = 0
+
+    def update_raptor(self):
+        raptor_group.update(False)
+        raptor_group.draw(screen2)
+        screen.blit(screen2, (0, 0))
+
+    def update_fairing(self):
+        fairing_group.update(False)
+        fairing_group.draw(screen2)
+        screen.blit(screen2, (0, 0))
 
     def update_enemies(self):
         enemies_sprite.update(False)
@@ -402,6 +477,10 @@ class Player(pygame.sprite.Sprite):
         self.HEIGHT_TABLE = [200, 280, 283, 380]
         self.HEALTH_TABLE = [600, 1200, 2000, 3000]
         self.SPEED_TABLE = [10, 15, 20, 25]
+        self.raptor_time = 0
+        self.frames = 0
+        self.is_raptor = False
+        self.titan_damage = 0
 
     def update(self):
         if self.sprite_number < 13:
@@ -414,6 +493,18 @@ class Player(pygame.sprite.Sprite):
         self.line_health.update()
         self.score_label.update()
         self.xp_label.update()
+        if self.is_raptor:
+            self.frames += 1
+            if self.frames % (FPS // 2) == 0:
+                self.raptor_time -= 1
+                raptor_icon_group.update(True)
+            if self.raptor_time <= 0:
+                self.is_raptor = False
+                self.speed -= 5
+            raptor_icon_group.update(False)
+            raptor_icon_group.draw(screen2)
+        fairing_icon_group.update(False)
+        fairing_icon_group.draw(screen2)
         screen.blit(screen2, (0, 0))
 
     def move(self, key):
@@ -433,6 +524,10 @@ class Player(pygame.sprite.Sprite):
             self.rect.y += self.speed
 
     def take_health(self, count):
+        if self.titan_damage != 0:
+            self.titan_damage -= 1
+            fairing_icon_group.update(True)
+            return
         self.health -= count
         self.line_health.take_health(count)
         print(self.health)
@@ -447,6 +542,7 @@ class Player(pygame.sprite.Sprite):
                     data = open(PATH_TO_RECORD_FILE, mode='w').write(json.dumps(data, ensure_ascii=False))
 
     def get_health(self, count):
+
         if self.health + count <= self.all_health:
             self.line_health.get_health(count)
             self.health += count
@@ -500,26 +596,59 @@ class Player(pygame.sprite.Sprite):
         fuels_sprite.update(True)
         upgrades_sprite.update(True)
         bullets_sprite.update(True)
+        raptor_group.update(True)
+        fairing_group.update(True)
 
-    def is_xp_drop(self):
+    def is_xp_drop(self):  # Проверяет, пора ли дропать запчасти
         if self.xp_drop > 500 and self.rocket_level < 4:
             self.xp_drop = 0
             return True
         return False
 
+    def update_speed_raptor(self):  # Вызывается при собирании дропа Raptor
+        self.is_raptor = True
+        if self.raptor_time <= 0:
+            self.speed += 5
+        self.raptor_time += 20
+        raptor_icon_group.empty()
+        RaptorIcon(RAPTOR_ICON_SPRITE, self.raptor_time)
 
-class Raptor(pygame.sprite.Sprite):
+    def get_titan_fairing(self):  # Вызывается при собирании дропа Fairing
+        self.titan_damage += 2
+        fairing_icon_group.empty()
+        FairingIcon(FAIRING_ICON_SPRITE, self.titan_damage)
+
+
+class Raptor(Drops):
     # В этом классе создается дроп - двигатель раптор, котороый увеличивает скорость на 50 %
     #  и отслеживается время его действия
-    def __init__(self):
-        super().__init__()
+    def __init__(self, x, y, speed):
+        image = RAPTOR_SPRITE
+        super().__init__(raptor_group, image, x, y, speed)
+
+    def update(self, is_update_speed):
+        if is_update_speed:
+            self.update_speed()
+        self.rect.y += self.speed
+        self.in_screen()
+        if self.is_collidle(player):
+            player.update_speed_raptor()
 
 
-class Fairing(pygame.sprite.Sprite):
+class Fairing(Drops):
     # В этом классе создается дроп - титановый обтекатель, который позволяет ракете выдержать 3 удара
     # и отслеживается его состояние
-    def __init__(self):
-        super().__init__()
+    def __init__(self, x, y, speed):
+        image = FAIRING_SPRITE
+        super().__init__(fairing_group, image, x, y, speed)
+
+    def update(self, is_update_speed):
+        if is_update_speed:
+            self.update_speed()
+        self.rect.y += self.speed
+        self.in_screen()
+        if self.is_collidle(player):
+            player.get_titan_fairing()
 
 
 class Fuel(Drops):
@@ -581,14 +710,14 @@ background = Background()
 screen2 = pygame.Surface(screen.get_size())
 player = Player(PATH_TO_ROCKET_SPRITES + '/1/1.png', 500, 700)
 clock = pygame.time.Clock()
-
+FPS = 60
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
     player.move(pygame.key.get_pressed())
 
-    clock.tick(60)
+    clock.tick(FPS)
     screen2.blit(background.get_fon(), (0, 0))
     background.update()
     player.update()

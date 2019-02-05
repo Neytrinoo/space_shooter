@@ -20,6 +20,7 @@ raptor_group = pygame.sprite.Group()
 fairing_group = pygame.sprite.Group()
 raptor_icon_group = pygame.sprite.Group()
 fairing_icon_group = pygame.sprite.Group()
+gameover_group = pygame.sprite.Group()
 screen.fill((0, 0, 0))
 fps = 100
 PATH_TO_RECORD_FILE = 'record.json'
@@ -703,6 +704,18 @@ def start_screen():
         pygame.display.flip()
 
 
+class Gameover(pygame.sprite.Sprite):
+    def __init__(self, img):
+        super().__init__(gameover_group)
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.scx = 810
+        self.scy = 455
+
+    def update(self, img):
+        self.image = img
+
+
 start_screen()
 
 running = True
@@ -711,6 +724,15 @@ screen2 = pygame.Surface(screen.get_size())
 player = Player(PATH_TO_ROCKET_SPRITES + '/1/1.png', 500, 700)
 clock = pygame.time.Clock()
 FPS = 60
+gameover = Gameover(load_image('img/fons/gameover.jpg'))
+count = 0
+MUSICS = ['space_oddity.wav', 'life_on_mars.wav', 'starman.wav', 'under_pressure.wav']
+pygame.mixer.init()
+gameover_sound = pygame.mixer.Sound('sounds/gameover.wav')
+game_sound = pygame.mixer.Sound('sounds/' + MUSICS[randint(0, 3)])
+
+game_sound.set_volume(0.1)
+game_sound.play(-1)
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -718,8 +740,19 @@ while running:
     player.move(pygame.key.get_pressed())
 
     clock.tick(FPS)
-    screen2.blit(background.get_fon(), (0, 0))
-    background.update()
-    player.update()
+    if player.is_game:
+        screen2.blit(background.get_fon(), (0, 0))
+        background.update()
+        player.update()
+    else:
+        if count == 0:
+            game_sound.stop()
+            gameover_sound.play()
+            clock.tick(1)
+        count += 1
+        if count == 300:
+            gameover_group.update(load_image('img/fons/gameover2.jpg'))
+        gameover_group.draw(screen2)
+        screen.blit(screen2, (0, 0))
 
     pygame.display.flip()

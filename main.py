@@ -38,6 +38,18 @@ PATH_TO_FAIRING_SPRITE = 'img/sprites/drops/titan_fairing.png'
 PATH_TO_FAIRING_ICON_SPRITE = 'img/sprites/drops/titan_fairing_icon.png'
 PATH_TO_RAPTOR_SPRITE = 'img/sprites/drops/raptor.png'
 PATH_TO_RAPTOR_ICON_SPRITE = 'img/sprites/drops/raptor_icon.png'
+RAPTOR_SOUND = pygame.mixer.Sound('sounds/raptor.wav')
+RAPTOR_SOUND.set_volume(0.4)
+FUEL_SOUND = pygame.mixer.Sound('sounds/fuel.wav')
+FAIRING_SOUND = pygame.mixer.Sound('sounds/fairing.wav')
+FAIRING_SOUND.set_volume(0.5)
+UPGRADE_SOUND = pygame.mixer.Sound('sounds/upgrade.wav')
+CRASH_SOUND = pygame.mixer.Sound('sounds/crash.wav')
+CRASH_SOUND.set_volume(0.3)
+BULLET_SOUND = pygame.mixer.Sound('sounds/bullet.wav')
+BULLET_SOUND.set_volume(0.1)
+BULLET_CRASH_SOUND = pygame.mixer.Sound('sounds/bullet_crash.wav')
+BULLET_CRASH_SOUND.set_volume(0.3)
 COUNT_SPARCKS = 5
 COUNT_ROCKETS = 1
 COUNT_ENEMIES = 2
@@ -307,8 +319,9 @@ class Drops(pygame.sprite.Sprite):
         self.speed = speed
         self.mask = pygame.mask.from_surface(self.image)
 
-    def is_collidle(self, elem):
+    def is_collidle(self, elem, sound):
         if pygame.sprite.collide_mask(self, elem):
+            sound.play()
             self.kill()
             return True
         return False
@@ -367,7 +380,7 @@ class Meteorite(Drops):
     def update(self, is_update_speed):
         self.rect.y += self.speed
         self.in_screen()
-        if self.is_collidle(player):
+        if self.is_collidle(player, CRASH_SOUND):
             for i in range(50):
                 nums = range(-6, 10)
                 Sparks(self.rect.x, self.rect.y, choice(nums), choice(nums), self.speed)
@@ -410,7 +423,7 @@ class Enemy(Drops):
 
         if self.iter_for_bullets % (170 - self.speed * 20) == 0:
             self.shoot()
-        if self.is_collidle(player):
+        if self.is_collidle(player, CRASH_SOUND):
             for i in range(50):
                 nums = range(-6, 10)
                 Sparks(self.rect.x, self.rect.y, choice(nums), choice(nums), self.speed)
@@ -423,6 +436,7 @@ class Enemy(Drops):
             x = self.rect.x + 35
         elif self.sprite_random == 2:
             x = self.rect.x
+        BULLET_SOUND.play()
         Bullet(self.sprite_random, self.speed * 4, x, y)
 
 
@@ -439,7 +453,7 @@ class Bullet(Drops):
         self.in_screen()
         if is_update_speed:
             self.update_speed()
-        if self.is_collidle(player):
+        if self.is_collidle(player, BULLET_CRASH_SOUND):
             for i in range(50):
                 nums = range(-6, 10)
                 Sparks(self.rect.x, self.rect.y, choice(nums), choice(nums), self.speed)
@@ -632,9 +646,8 @@ class Raptor(Drops):
             self.update_speed()
         self.rect.y += self.speed
         self.in_screen()
-        if self.is_collidle(player):
+        if self.is_collidle(player, RAPTOR_SOUND):
             player.update_speed_raptor()
-
 
 class Fairing(Drops):
     # В этом классе создается дроп - титановый обтекатель, который позволяет ракете выдержать 3 удара
@@ -648,7 +661,7 @@ class Fairing(Drops):
             self.update_speed()
         self.rect.y += self.speed
         self.in_screen()
-        if self.is_collidle(player):
+        if self.is_collidle(player, FAIRING_SOUND):
             player.get_titan_fairing()
 
 
@@ -663,7 +676,7 @@ class Fuel(Drops):
             self.update_speed()
         self.rect.y += self.speed
         self.in_screen()
-        if self.is_collidle(player):
+        if self.is_collidle(player, FUEL_SOUND):
             player.get_health(300)
 
 
@@ -679,7 +692,7 @@ class Upgrade(Drops):
             self.update_speed()
         self.rect.y += self.speed
         self.in_screen()
-        if self.is_collidle(player):
+        if self.is_collidle(player, UPGRADE_SOUND):
             player.update_xp(100)
 
 

@@ -782,6 +782,8 @@ while running:
         count += 1
         if count == 300:
             gameover_group.update(load_image('img/fons/gameover2.jpg'))
+        if count == 750:
+            sys.exit()
         gameover_group.draw(screen2)
         screen.blit(screen2, (0, 0))
 

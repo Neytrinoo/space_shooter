@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 from random import randint, choice
 
 import pygame
@@ -55,6 +56,17 @@ COUNT_ROCKETS = 1
 COUNT_ENEMIES = 2
 COUNT_BULLETS = 2
 COUNT_METEORITES = 3
+ROCKET_SPRITES = [[], [], [], []]
+
+
+def stop_all_sounds():
+    RAPTOR_SOUND.stop()
+    FUEL_SOUND.stop()
+    FAIRING_SOUND.stop()
+    UPGRADE_SOUND.stop()
+    CRASH_SOUND.stop()
+    BULLET_SOUND.stop()
+    BULLET_CRASH_SOUND.stop()
 
 
 def load_image(name, colorkey=None):
@@ -66,6 +78,11 @@ def load_image(name, colorkey=None):
         raise SystemExit(message)
 
 
+for i in range(1, 14):
+    ROCKET_SPRITES[0].append(load_image(PATH_TO_ROCKET_SPRITES + '/1/' + str(i) + '.png'))
+    ROCKET_SPRITES[1].append(load_image(PATH_TO_ROCKET_SPRITES + '/2/' + str(i) + '.png'))
+    ROCKET_SPRITES[2].append(load_image(PATH_TO_ROCKET_SPRITES + '/3/' + str(i) + '.png'))
+    ROCKET_SPRITES[3].append(load_image(PATH_TO_ROCKET_SPRITES + '/4/' + str(i) + '.png'))
 BULLET_SPRITE_1 = load_image(PATH_TO_BULLETS_SPRITES + '/1.png')
 BULLET_SPRITE_2 = load_image(PATH_TO_BULLETS_SPRITES + '/2.png')
 ENEMIES_SPRITE_1 = load_image(PATH_TO_ENEMIES_SPRITES + '/1.png')
@@ -321,6 +338,7 @@ class Drops(pygame.sprite.Sprite):
 
     def is_collidle(self, elem, sound):
         if pygame.sprite.collide_mask(self, elem):
+            BULLET_SOUND.stop()
             sound.play()
             self.kill()
             return True
@@ -489,7 +507,7 @@ class Player(pygame.sprite.Sprite):
         self.xp_label = Experience(self.xp, self.need_xp)
         self.xp_drop = 0
         self.is_game = True
-        self.HEIGHT_TABLE = [200, 280, 283, 380]
+        self.HEIGHT_TABLE = [110, 142, 142, 166]
         self.HEALTH_TABLE = [600, 1200, 2000, 3000]
         self.SPEED_TABLE = [10, 15, 20, 25]
         self.raptor_time = 0
@@ -502,8 +520,7 @@ class Player(pygame.sprite.Sprite):
             self.sprite_number += 1
         else:
             self.sprite_number = 1
-        self.path_ro_sprite = '/'.join(self.path_ro_sprite.split('/')[:-1]) + '/' + str(self.sprite_number) + '.png'
-        self.image = pygame.image.load(self.path_ro_sprite)
+        self.image = ROCKET_SPRITES[self.rocket_level - 1][self.sprite_number - 1]
         player_sprite.draw(screen2)
         self.line_health.update()
         self.score_label.update()
@@ -589,13 +606,11 @@ class Player(pygame.sprite.Sprite):
                 self.update_speed()
 
     def update_sprite(self):
-        sprite_path = PATH_TO_ROCKET_SPRITES + '/' + str(self.rocket_level) + '/' + '1' + '.png'
+        self.image = ROCKET_SPRITES[self.rocket_level - 1][self.sprite_number - 1]
         x, y = self.rect.x, self.rect.y
-        self.image = pygame.image.load(sprite_path)
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
-        self.path_ro_sprite = sprite_path
 
     def update_health(self):
         self.all_health = self.HEALTH_TABLE[self.rocket_level - 1]
@@ -649,6 +664,7 @@ class Raptor(Drops):
         if self.is_collidle(player, RAPTOR_SOUND):
             player.update_speed_raptor()
 
+
 class Fairing(Drops):
     # В этом классе создается дроп - титановый обтекатель, который позволяет ракете выдержать 3 удара
     # и отслеживается его состояние
@@ -701,9 +717,9 @@ def start_screen():
     record = 'Ваш рекорд: ' + record + ' км'
     background = pygame.image.load(PATH_TO_START_SCREEN)
     screen.blit(background, (0, 0))
-    font = pygame.font.Font(None, 90).render(record, 1, pygame.Color('blue'))
-    screen.blit(font, (100, 700))
-    button_pos = (300, 400)
+    font = pygame.font.Font(None, 90).render(record, 1, pygame.Color('white'))
+    screen.blit(font, (10, 800))
+    button_pos = (450, 400)
     button = ButtonStartGame(button_pos[0], button_pos[1], PATH_TO_BUTTON_START_GAME)
     button.render()
     running = True
@@ -711,6 +727,7 @@ def start_screen():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+                sys.exit()
             if event.type == pygame.MOUSEBUTTONUP:
                 if button.is_clicked(event.pos):
                     return
@@ -739,13 +756,12 @@ clock = pygame.time.Clock()
 FPS = 60
 gameover = Gameover(load_image('img/fons/gameover.jpg'))
 count = 0
-MUSICS = ['space_oddity.wav', 'life_on_mars.wav', 'starman.wav', 'under_pressure.wav']
+MUSICS = ['space_oddity.mp3', 'life_on_mars.mp3', 'starman.mp3', 'under_pressure.mp3']
 pygame.mixer.init()
 gameover_sound = pygame.mixer.Sound('sounds/gameover.wav')
-game_sound = pygame.mixer.Sound('sounds/' + MUSICS[randint(0, 3)])
-
-game_sound.set_volume(0.1)
-game_sound.play(-1)
+pygame.mixer.music.load('sounds/' + MUSICS[randint(0, 3)])
+pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.play(-1)
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -759,7 +775,8 @@ while running:
         player.update()
     else:
         if count == 0:
-            game_sound.stop()
+            pygame.mixer.music.stop()
+            stop_all_sounds()
             gameover_sound.play()
             clock.tick(1)
         count += 1

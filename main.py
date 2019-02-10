@@ -2,14 +2,15 @@ import json
 import os
 import sys
 from random import randint, choice
+from ctypes import windll
 
 import pygame
 from pygame.sprite import Group
 
 pygame.init()
-size = width, height = 1700, 900
+size = width, height = windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1)
 screen_rect = (0, 0, width, height)
-screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 player_sprite = pygame.sprite.Group()
 enemies_sprite = pygame.sprite.Group()
 bullets_sprite = pygame.sprite.Group()
@@ -251,7 +252,7 @@ class Background:
         screen.blit(self.fon_img, (0, 0))
         self.speed = 1
         self.count_iter = 0
-        self.DELAY_TABLE = [[80, 60], [60, 40], [60, 40], [60, 40]]
+        self.DELAY_TABLE = [[70, 50], [60, 40], [50, 30], [40, 20]]
         self.delay = self.DELAY_TABLE[0]
 
     def get_fon(self):
@@ -268,14 +269,14 @@ class Background:
             Enemy(randint(1, 2), randint(10, width - 200), -120, self.speed)
         elif (who_is == 1 or who_is == 2) and self.count_iter % self.delay[1] == 0:
             Meteorite(randint(1, 3), randint(10, width - 70), -20, self.speed)
-        drop = randint(1, 14)
-        if drop == 5 and self.count_iter % 50 == 0:
+        drop = randint(1, 25)
+        if drop == 7 and self.count_iter % 50 == 0:
             Fuel(randint(10, width - 50), 0, self.speed)
         if player.is_xp_drop():
             Upgrade(randint(10, width - 60), -10, self.speed)
-        if drop == 8 and self.count_iter % 80 == 0:
+        if drop == 24 and self.count_iter % 80 == 0:
             Raptor(randint(10, width - 50), -10, self.speed)
-        if drop == 14 and self.count_iter % 80 == 0:
+        if drop == 3 and self.count_iter % 80 == 0:
             Fairing(randint(10, width - 50), -10, self.speed)
         self.update_enemies()
         self.update_meteorites()
@@ -376,7 +377,7 @@ class Sparks(pygame.sprite.Sprite):
         self.in_screen()
 
     def in_screen(self):
-        if self.rect.y < 900:
+        if self.rect.y < width:
             return True
         else:
             self.kill()
@@ -540,13 +541,14 @@ class Player(pygame.sprite.Sprite):
         screen.blit(screen2, (0, 0))
 
     def move(self, key):
+        w, h = list(self.image.get_rect())[2:]
         if key[276] == 1:
             if self.rect.x > 5:
                 self.rect.x -= self.speed
             else:
-                self.rect.x = 1680
+                self.rect.x = width - w
         if key[275] == 1:
-            if self.rect.x < 1680:
+            if self.rect.x < width - w:
                 self.rect.x += self.speed
             else:
                 self.rect.x = 5
@@ -718,19 +720,21 @@ def start_screen():
     background = pygame.image.load(PATH_TO_START_SCREEN)
     screen.blit(background, (0, 0))
     font = pygame.font.Font(None, 90).render(record, 1, pygame.Color('white'))
-    screen.blit(font, (10, 800))
-    button_pos = (450, 400)
+    screen.blit(font, (10, height-100))
+    button_pos = (584, 443)
     button = ButtonStartGame(button_pos[0], button_pos[1], PATH_TO_BUTTON_START_GAME)
     button.render()
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONUP:
                 if button.is_clicked(event.pos):
                     return
+            if event.type == pygame.KEYDOWN:
+                if event.key == 27:
+                    sys.exit()
         pygame.display.flip()
 
 
@@ -766,6 +770,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == 27:
+                player.take_health(10000)
+                sys.exit()
     player.move(pygame.key.get_pressed())
 
     clock.tick(FPS)

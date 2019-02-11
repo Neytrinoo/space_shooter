@@ -12,12 +12,12 @@
     <session id="-624325266">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="37" />
+          <entry key="project.closed" value="38" />
           <entry key="project.open.time.0" value="6" />
           <entry key="project.open.time.2" value="13" />
-          <entry key="project.open.time.3" value="18" />
+          <entry key="project.open.time.3" value="19" />
           <entry key="project.open.time.5" value="1" />
-          <entry key="project.opened" value="38" />
+          <entry key="project.opened" value="39" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -55,7 +55,7 @@
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="165">
-              <caret line="761" column="9" lean-forward="true" selection-start-line="761" selection-start-column="9" selection-end-line="761" selection-end-column="9" />
+              <caret line="761" column="9" selection-start-line="761" selection-start-column="9" selection-end-line="761" selection-end-column="9" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
                 <marker date="1549793115893" expanded="true" signature="2308:2509" ph="..." />
@@ -106,6 +106,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -133,11 +134,10 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../flask/app" />
     <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
   </component>
   <component name="RunDashboard">
@@ -330,7 +330,7 @@
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
-          <caret line="761" column="9" lean-forward="true" selection-start-line="761" selection-start-column="9" selection-end-line="761" selection-end-column="9" />
+          <caret line="761" column="9" selection-start-line="761" selection-start-column="9" selection-end-line="761" selection-end-column="9" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
             <marker date="1549793115893" expanded="true" signature="2308:2509" ph="..." />
